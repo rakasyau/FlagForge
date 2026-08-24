@@ -1,5 +1,6 @@
 export type CategoryId = 
   | 'pengantar'
+  | 'environment'
   | 'linux'
   | 'networking'
   | 'crypto'
@@ -56,7 +57,7 @@ export interface ModuleChapter {
   id: CategoryId;
   chapterNumber: number;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   summary: string;
   readingTimeMinutes: number;
   sections: ModuleSection[];
