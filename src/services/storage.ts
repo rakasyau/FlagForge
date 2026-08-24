@@ -1,0 +1,238 @@
+import { UserProfile, UserChallengeProgress, SubmissionLog, Badge, ChallengeCategory } from '../types';
+
+const USER_KEY = 'flagforge_user';
+const PROGRESS_KEY = 'flagforge_progress';
+const LOGS_KEY = 'flagforge_logs';
+
+export const INITIAL_USER: UserProfile = {
+  id: 'usr_cadet_01',
+  username: 'CyberCadet',
+  email: 'cadet@flagforge.io',
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  title: 'Novice Flag Hunter',
+  createdAt: new Date().toISOString(),
+  points: 0,
+  solvedCount: 0,
+  revealedCount: 0,
+  categoryStats: {
+    linux: { solved: 0, revealed: 0, total: 2 },
+    networking: { solved: 0, revealed: 0, total: 2 },
+    crypto: { solved: 0, revealed: 0, total: 2 },
+    web: { solved: 0, revealed: 0, total: 2 },
+    forensics: { solved: 0, revealed: 0, total: 2 },
+    stego: { solved: 0, revealed: 0, total: 2 },
+    reverse: { solved: 0, revealed: 0, total: 2 },
+    pwn: { solved: 0, revealed: 0, total: 2 },
+    osint: { solved: 0, revealed: 0, total: 1 },
+    scripting: { solved: 0, revealed: 0, total: 1 },
+  }
+};
+
+export const INITIAL_BADGES: Badge[] = [
+  {
+    id: 'first_blood',
+    name: 'First Blood',
+    description: 'Menyelesaikan soal pertama secara mandiri tanpa menyerah.',
+    icon: 'Droplet',
+    unlocked: false,
+    progress: 0,
+    requirementText: 'Solve 1 challenge'
+  },
+  {
+    id: 'terminal_ninja',
+    name: 'Terminal Ninja',
+    description: 'Menyelesaikan seluruh soal tantangan Linux & Networking.',
+    icon: 'Terminal',
+    unlocked: false,
+    progress: 0,
+    requirementText: 'Solve all Linux & Network challenges'
+  },
+  {
+    id: 'crypto_cracked',
+    name: 'Cipher Breaker',
+    description: 'Menembus kriptografi Base64, Caesar, dan RSA.',
+    icon: 'Key',
+    unlocked: false,
+    progress: 0,
+    requirementText: 'Solve 2 Crypto challenges'
+  },
+  {
+    id: 'web_injector',
+    name: 'Web Exploiter',
+    description: 'Menemukan celah SQL Injection & LFI pada target web.',
+    icon: 'Globe',
+    unlocked: false,
+    progress: 0,
+    requirementText: 'Solve 2 Web challenges'
+  },
+  {
+    id: 'persistent_hacker',
+    name: 'Persistent Solver',
+    description: 'Mencapai total 500+ poin kompetisi CTF.',
+    icon: 'ShieldCheck',
+    unlocked: false,
+    progress: 0,
+    requirementText: 'Earn 500 points'
+  }
+];
+
+export function getUser(): UserProfile {
+  const saved = localStorage.getItem(USER_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch {
+      // fallback
+    }
+  }
+  localStorage.setItem(USER_KEY, JSON.stringify(INITIAL_USER));
+  return INITIAL_USER;
+}
+
+export function saveUser(user: UserProfile): void {
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
+export function getProgress(): Record<string, UserChallengeProgress> {
+  const saved = localStorage.getItem(PROGRESS_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch {
+      // fallback
+    }
+  }
+  return {};
+}
+
+export function getChallengeProgress(challengeId: string): UserChallengeProgress {
+  const progressMap = getProgress();
+  return progressMap[challengeId] || {
+    challengeId,
+    status: 'not_attempted',
+    attemptsCount: 0,
+  };
+}
+
+export function markChallengeSolved(challengeId: string, category: ChallengeCategory, points: number): void {
+  const progressMap = getProgress();
+  const current = progressMap[challengeId] || { challengeId, status: 'not_attempted', attemptsCount: 0 };
+  
+  if (current.status !== 'solved') {
+    const wasRevealed = current.status === 'revealed';
+    current.status = 'solved';
+    current.solvedAt = new Date().toISOString();
+    current.attemptsCount += 1;
+    progressMap[challengeId] = current;
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressMap));
+
+    // Update user stats & points
+    const user = getUser();
+    user.solvedCount += 1;
+    if (wasRevealed) {
+      user.revealedCount = Math.max(0, user.revealedCount - 1);
+    }
+    user.points += points;
+    if (user.categoryStats[category]) {
+      user.categoryStats[category].solved += 1;
+      if (wasRevealed) {
+        user.categoryStats[category].revealed = Math.max(0, user.categoryStats[category].revealed - 1);
+      }
+    }
+    
+    // Update title based on points
+    if (user.points >= 800) user.title = 'Elite CTF Master';
+    else if (user.points >= 400) user.title = 'Cyber Vanguard';
+    else if (user.points >= 150) user.title = 'Apprentice Hacker';
+
+    saveUser(user);
+  }
+}
+
+export function markChallengeRevealed(challengeId: string, category: ChallengeCategory): void {
+  const progressMap = getProgress();
+  const current = progressMap[challengeId] || { challengeId, status: 'not_attempted', attemptsCount: 0 };
+
+  if (current.status === 'not_attempted') {
+    current.status = 'revealed';
+    current.revealedAt = new Date().toISOString();
+    progressMap[challengeId] = current;
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressMap));
+
+    const user = getUser();
+    user.revealedCount += 1;
+    if (user.categoryStats[category]) {
+      user.categoryStats[category].revealed += 1;
+    }
+    saveUser(user);
+  }
+}
+
+export function getLogs(): SubmissionLog[] {
+  const saved = localStorage.getItem(LOGS_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch {
+      // fallback
+    }
+  }
+  return [];
+}
+
+export function addSubmissionLog(
+  challengeId: string,
+  challengeTitle: string,
+  category: ChallengeCategory,
+  submittedValue: string,
+  isCorrect: boolean
+): void {
+  const logs = getLogs();
+  const newLog: SubmissionLog = {
+    id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+    challengeId,
+    challengeTitle,
+    category,
+    submittedValue,
+    isCorrect,
+    submittedAt: new Date().toISOString()
+  };
+  const updatedLogs = [newLog, ...logs].slice(0, 50); // Keep last 50 submissions
+  localStorage.setItem(LOGS_KEY, JSON.stringify(updatedLogs));
+}
+
+export function getBadges(user: UserProfile): Badge[] {
+  return INITIAL_BADGES.map(badge => {
+    let unlocked = false;
+    let progress = 0;
+
+    if (badge.id === 'first_blood') {
+      progress = user.solvedCount > 0 ? 100 : 0;
+      unlocked = user.solvedCount >= 1;
+    } else if (badge.id === 'terminal_ninja') {
+      const linuxSolved = user.categoryStats.linux?.solved || 0;
+      const netSolved = user.categoryStats.networking?.solved || 0;
+      const total = 4;
+      const done = linuxSolved + netSolved;
+      progress = Math.min(100, Math.round((done / total) * 100));
+      unlocked = done >= total;
+    } else if (badge.id === 'crypto_cracked') {
+      const cryptoSolved = user.categoryStats.crypto?.solved || 0;
+      progress = Math.min(100, Math.round((cryptoSolved / 2) * 100));
+      unlocked = cryptoSolved >= 2;
+    } else if (badge.id === 'web_injector') {
+      const webSolved = user.categoryStats.web?.solved || 0;
+      progress = Math.min(100, Math.round((webSolved / 2) * 100));
+      unlocked = webSolved >= 2;
+    } else if (badge.id === 'persistent_hacker') {
+      progress = Math.min(100, Math.round((user.points / 500) * 100));
+      unlocked = user.points >= 500;
+    }
+
+    return {
+      ...badge,
+      unlocked,
+      progress
+    };
+  });
+}
