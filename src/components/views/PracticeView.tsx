@@ -205,10 +205,14 @@ export const PracticeView: React.FC = () => {
             {/* Filter Pills */}
             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-black/10">
               {/* Category Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex items-center gap-2.5 overflow-x-auto py-2.5 px-2 scrollbar-thin w-full">
                 <button
                   onClick={() => setActiveCategoryFilter('all')}
-                  className={`pill-button ${activeCategoryFilter === 'all' ? 'bg-void text-txt-on-dark ring-2 ring-flag' : 'pill-button-light'}`}
+                  className={`pill-button shrink-0 transition-all ${
+                    activeCategoryFilter === 'all'
+                      ? 'bg-void text-txt-on-dark ring-2 ring-flag ring-offset-2 ring-offset-surface-panel shadow-md scale-[1.02]'
+                      : 'pill-button-light'
+                  }`}
                 >
                   Semua Kategori
                 </button>
@@ -216,7 +220,11 @@ export const PracticeView: React.FC = () => {
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategoryFilter(cat.id)}
-                    className={`pill-button ${activeCategoryFilter === cat.id ? 'bg-void text-txt-on-dark ring-2 ring-flag' : 'pill-button-light'}`}
+                    className={`pill-button shrink-0 transition-all ${
+                      activeCategoryFilter === cat.id
+                        ? 'bg-void text-txt-on-dark ring-2 ring-flag ring-offset-2 ring-offset-surface-panel shadow-md scale-[1.02]'
+                        : 'pill-button-light'
+                    }`}
                   >
                     {cat.name}
                   </button>

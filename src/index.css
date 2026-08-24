@@ -88,12 +88,12 @@
 .pill-button-light {
   background: #FFFFFF;
   color: #131316;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.14);
 }
-.pill-button-light:hover, .pill-button-light.active {
-  background: #131316;
-  color: #F4F3F0;
-  border-color: #131316;
+.pill-button-light:hover {
+  background: #EAE9E4;
+  color: #131316;
+  border-color: rgba(0, 0, 0, 0.3);
 }
 
 .pill-button-dark {

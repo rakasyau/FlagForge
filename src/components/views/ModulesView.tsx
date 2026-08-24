@@ -60,7 +60,7 @@ export const ModulesView: React.FC = () => {
         </div>
 
         {/* Category Horizontal Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-2.5 overflow-x-auto py-3 px-2 scrollbar-thin">
           {CATEGORIES.map((cat) => {
             const isActive = cat.id === activeChapterId;
             return (
@@ -69,7 +69,7 @@ export const ModulesView: React.FC = () => {
                 onClick={() => handleSelectChapter(cat.id)}
                 className={`pill-button shrink-0 transition-all ${
                   isActive
-                    ? 'bg-void text-txt-on-dark shadow-md ring-2 ring-flag'
+                    ? 'bg-void text-txt-on-dark shadow-md ring-2 ring-flag ring-offset-2 ring-offset-surface-panel scale-[1.02]'
                     : 'pill-button-light'
                 }`}
               >
