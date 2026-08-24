@@ -8,7 +8,6 @@ import {
   Eye, 
   Award, 
   Flame, 
-  Clock, 
   ShieldCheck, 
   History, 
   Terminal, 
@@ -81,37 +80,35 @@ export const ProfileView: React.FC = () => {
   return (
     <div className="space-y-8 pb-12">
       {/* Top Profile Banner Card */}
-      <section className="bg-surface-panel text-txt-on-light rounded-[32px] p-6 md:p-8 shadow-panel-card border border-white/80">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-flag/40 shrink-0 shadow-lg bg-void/10">
+      <section className="bg-surface-panel text-txt-on-light rounded-2xl sm:rounded-[32px] p-4 sm:p-6 md:p-8 shadow-panel-card border border-white/80">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full overflow-hidden ring-4 ring-flag/40 shrink-0 shadow-lg bg-void/10">
               <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
             </div>
 
             <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-void text-txt-on-dark shadow-sm">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-void text-txt-on-dark shadow-sm">
                   {user.title}
                 </span>
-                <span className="text-xs text-txt-subtle font-mono">{user.email}</span>
+                <span className="text-[11px] sm:text-xs text-txt-subtle font-mono truncate max-w-[140px] sm:max-w-none">{user.email}</span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-txt-on-light">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-txt-on-light">
                 {user.username}
               </h2>
-              <p className="text-xs text-txt-subtle mt-1 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-flag" />
-                <span>Terdaftar sejak {new Date(user.createdAt).toLocaleDateString('id-ID', { dateStyle: 'medium' })}</span>
+              <p className="text-[11px] sm:text-xs text-txt-subtle mt-0.5 font-mono">
+                Akun Terdaftar Aktif • ID: {user._id?.slice(-8) || 'local'}
               </p>
             </div>
           </div>
 
-          {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="px-5 py-2.5 rounded-full bg-[#FEF3F2] hover:bg-red-100 text-state-locked text-xs font-semibold shadow-sm transition-all flex items-center gap-2 border border-state-locked/20"
+            className="px-4 py-2.5 rounded-full bg-void/10 hover:bg-void hover:text-white text-txt-on-light text-xs font-mono font-semibold transition-all border border-black/10 flex items-center justify-center gap-2 w-full md:w-auto"
           >
             <LogOut className="w-4 h-4" />
-            <span>Keluar (Logout)</span>
+            <span>Keluar Sesi</span>
           </button>
         </div>
 

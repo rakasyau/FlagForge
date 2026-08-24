@@ -78,10 +78,10 @@ export const LandingView: React.FC = () => {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
               <button
                 onClick={() => navigate('/modul')}
-                className="px-6 py-3.5 rounded-full bg-flag hover:bg-flag-hover text-white text-sm font-semibold shadow-orange-glow transition-all duration-200 flex items-center gap-2 group"
+                className="px-6 py-3.5 rounded-full bg-flag hover:bg-flag-hover text-white text-sm font-semibold shadow-orange-glow transition-all duration-200 flex items-center justify-center gap-2 group"
               >
                 <span>Mulai Belajar Materi</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -89,7 +89,7 @@ export const LandingView: React.FC = () => {
 
               <button
                 onClick={() => navigate('/latihan')}
-                className="px-6 py-3.5 rounded-full bg-surface-panel text-txt-on-light hover:bg-white text-sm font-semibold shadow-panel-card transition-all duration-200 flex items-center gap-2"
+                className="px-6 py-3.5 rounded-full bg-surface-panel text-txt-on-light hover:bg-white text-sm font-semibold shadow-panel-card transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <Swords className="w-4 h-4 text-flag" />
                 <span>Coba Soal Latihan</span>
@@ -97,7 +97,7 @@ export const LandingView: React.FC = () => {
             </div>
 
             {/* Micro Stats */}
-            <div className="flex items-center gap-6 pt-4 border-t border-white/5 text-xs text-txt-muted">
+            <div className="flex items-center gap-4 sm:gap-6 pt-4 border-t border-white/5 text-xs text-txt-muted">
               <div>
                 <span className="font-display font-bold text-txt-on-dark text-lg block">14 Bab</span>
                 <span>Materi Lengkap</span>

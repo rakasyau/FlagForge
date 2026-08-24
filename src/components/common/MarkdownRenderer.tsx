@@ -56,19 +56,31 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cla
       pre.style.border = '1px solid rgba(255, 255, 255, 0.1)';
       pre.style.margin = '1rem 0';
 
-      if (codeEl) {
-        codeEl.style.display = 'block';
-        codeEl.style.padding = '1rem';
-        codeEl.style.overflowX = 'auto';
-        codeEl.style.fontSize = '0.75rem';
-        codeEl.style.lineHeight = '1.6';
-        codeEl.style.color = '#E2E8F0';
-        codeEl.style.fontFamily = '"JetBrains Mono", monospace';
-      }
+    // Wrap tables in responsive scroll containers
+    if (containerRef.current) {
+      const tables = containerRef.current.querySelectorAll('table');
+      tables.forEach((table) => {
+        if (table.parentElement?.classList.contains('table-responsive-container')) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-responsive-container overflow-x-auto my-4 rounded-xl border border-white/10 scrollbar-thin';
+        table.parentNode?.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      });
+    }
 
-      pre.insertBefore(header, pre.firstChild);
-    });
-  }, [parsedHtml]);
+    if (codeEl) {
+      codeEl.style.display = 'block';
+      codeEl.style.padding = '0.85rem 1rem';
+      codeEl.style.overflowX = 'auto';
+      codeEl.style.fontSize = '0.75rem';
+      codeEl.style.lineHeight = '1.6';
+      codeEl.style.color = '#E2E8F0';
+      codeEl.style.fontFamily = '"JetBrains Mono", monospace';
+    }
+
+    pre.insertBefore(header, pre.firstChild);
+  });
+}, [parsedHtml]);
 
   return (
     <div

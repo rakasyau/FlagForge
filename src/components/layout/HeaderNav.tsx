@@ -108,20 +108,20 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
       </div>
 
       {/* Center Search Pill & Live Dropdown Matrix */}
-      <div ref={searchContainerRef} className="relative flex-1 max-w-xs md:max-w-md">
+      <div ref={searchContainerRef} className="relative flex-1 min-w-[140px] max-w-xs md:max-w-md">
         <div className="relative flex items-center">
-          <Search className="w-4 h-4 absolute left-3.5 text-txt-subtle pointer-events-none" />
+          <Search className="w-4 h-4 absolute left-3 text-txt-subtle pointer-events-none" />
           <input
             ref={inputRef}
             type="text"
-            placeholder="Cari materi atau soal CTF... (Ctrl+K)"
+            placeholder="Cari materi / soal... (Ctrl+K)"
             value={searchQuery}
             onFocus={() => setIsOpen(true)}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setIsOpen(true);
             }}
-            className="w-full bg-surface-panel text-txt-on-light text-xs md:text-sm pl-9 pr-8 py-2 rounded-full border border-black/10 focus:outline-none focus:ring-2 focus:ring-flag placeholder:text-txt-subtle transition-all"
+            className="w-full bg-surface-panel text-txt-on-light text-xs md:text-sm pl-8 sm:pl-9 pr-7 sm:pr-8 py-2 rounded-full border border-black/10 focus:outline-none focus:ring-2 focus:ring-flag placeholder:text-txt-subtle transition-all"
           />
           {searchQuery && (
             <button
@@ -129,7 +129,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                 setSearchQuery('');
                 setIsOpen(false);
               }}
-              className="absolute right-3 text-xs text-txt-subtle hover:text-txt-on-light font-bold"
+              className="absolute right-2.5 text-xs text-txt-subtle hover:text-txt-on-light font-bold"
               title="Hapus pencarian"
             >
               ✕
@@ -139,7 +139,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
 
         {/* Live Search Results Popup */}
         {isOpen && cleanQuery.length > 0 && (
-          <div className="absolute left-0 right-0 top-full mt-2 bg-surface-dark-card border border-white/15 rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in max-h-[460px] overflow-y-auto scrollbar-thin">
+          <div className="fixed sm:absolute left-4 right-4 sm:left-0 sm:right-0 top-16 sm:top-full mt-2 bg-surface-dark-card border border-white/15 rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in max-h-[70vh] sm:max-h-[460px] overflow-y-auto scrollbar-thin">
             {hasResults ? (
               <div className="p-3 space-y-4">
                 {/* Module Results Group */}
@@ -271,7 +271,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
             {/* User Profile Pill */}
             <Link
               to="/profile"
-              className="px-3.5 py-1.5 rounded-full bg-flag hover:bg-flag-hover text-white text-xs font-semibold shadow-orange-glow-sm transition-all"
+              className="px-3 sm:px-3.5 py-1.5 rounded-full bg-flag hover:bg-flag-hover text-white text-xs font-semibold shadow-orange-glow-sm transition-all max-w-[90px] sm:max-w-none truncate block"
             >
               <span>{user.username}</span>
             </Link>

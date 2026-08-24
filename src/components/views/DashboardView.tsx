@@ -33,49 +33,49 @@ export const DashboardView: React.FC = () => {
   return (
     <div className="space-y-8 pb-10">
       {/* Top Greeting & Overview Card */}
-      <section className="bg-surface-panel text-txt-on-light rounded-[32px] p-6 md:p-8 shadow-panel-card border border-white/70">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden ring-4 ring-flag/30 shrink-0 bg-void/10">
+      <section className="bg-surface-panel text-txt-on-light rounded-2xl sm:rounded-[32px] p-4 sm:p-6 md:p-8 shadow-panel-card border border-white/70">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden ring-4 ring-flag/30 shrink-0 bg-void/10">
               <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-flag/10 text-flag">
+                <span className="text-[10px] sm:text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-flag/10 text-flag">
                   {user.title}
                 </span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-txt-on-light">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-txt-on-light">
                 Selamat Datang, {user.username}!
               </h2>
-              <p className="text-xs text-txt-subtle mt-0.5">
+              <p className="text-[11px] sm:text-xs text-txt-subtle mt-0.5">
                 Lanjutkan latihan untuk menguasai 8 kategori CTF dan meningkatkan ranking.
               </p>
             </div>
           </div>
 
           {/* Points & Solved Stats */}
-          <div className="flex items-center gap-4 flex-wrap bg-white p-4 rounded-2xl border border-black/5 shadow-sm">
-            <div className="text-center px-3">
-              <span className="text-xs text-txt-subtle block font-mono">TOTAL SCORE</span>
-              <span className="text-2xl font-display font-bold text-flag flex items-center justify-center gap-1">
-                <Flame className="w-5 h-5 fill-flag" />
+          <div className="flex items-center justify-around gap-2 sm:gap-4 flex-wrap bg-white p-3 sm:p-4 rounded-2xl border border-black/5 shadow-sm w-full md:w-auto">
+            <div className="text-center px-2 sm:px-3">
+              <span className="text-[10px] sm:text-xs text-txt-subtle block font-mono">TOTAL SCORE</span>
+              <span className="text-xl sm:text-2xl font-display font-bold text-flag flex items-center justify-center gap-1">
+                <Flame className="w-4 h-4 sm:w-5 sm:h-5 fill-flag" />
                 {user.points}
               </span>
             </div>
-            <div className="w-px h-10 bg-black/10" />
-            <div className="text-center px-3">
-              <span className="text-xs text-txt-subtle block font-mono">SOLVED</span>
-              <span className="text-2xl font-display font-bold text-state-solved flex items-center justify-center gap-1">
-                <CheckCircle2 className="w-5 h-5" />
+            <div className="w-px h-8 sm:h-10 bg-black/10" />
+            <div className="text-center px-2 sm:px-3">
+              <span className="text-[10px] sm:text-xs text-txt-subtle block font-mono">SOLVED</span>
+              <span className="text-xl sm:text-2xl font-display font-bold text-state-solved flex items-center justify-center gap-1">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 {user.solvedCount}
               </span>
             </div>
-            <div className="w-px h-10 bg-black/10" />
-            <div className="text-center px-3">
-              <span className="text-xs text-txt-subtle block font-mono">REVEALED</span>
-              <span className="text-2xl font-display font-bold text-state-revealed flex items-center justify-center gap-1">
-                <Eye className="w-5 h-5" />
+            <div className="w-px h-8 sm:h-10 bg-black/10" />
+            <div className="text-center px-2 sm:px-3">
+              <span className="text-[10px] sm:text-xs text-txt-subtle block font-mono">REVEALED</span>
+              <span className="text-xl sm:text-2xl font-display font-bold text-state-revealed flex items-center justify-center gap-1">
+                <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                 {user.revealedCount}
               </span>
             </div>
@@ -83,7 +83,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* Global Progress Bar */}
-        <div className="mt-8 pt-6 border-t border-black/10">
+        <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-black/10">
           <div className="flex items-center justify-between text-xs font-mono mb-2">
             <span className="text-txt-on-light font-bold flex items-center gap-1.5">
               <TrendingUp className="w-4 h-4 text-flag" />

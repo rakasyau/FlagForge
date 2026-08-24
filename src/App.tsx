@@ -18,12 +18,12 @@ export const AppContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="relative min-h-screen bg-void text-txt-on-dark font-sans flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8 selection:bg-flag selection:text-white">
+    <div className="relative min-h-screen bg-void text-txt-on-dark font-sans flex flex-col items-center justify-center p-1.5 sm:p-4 md:p-6 lg:p-8 selection:bg-flag selection:text-white">
       {/* Background Starfield Canvas */}
       <StarfieldCanvas />
 
-      {/* Main Floating Outer Device Chassis (Inspired by the UI Reference) */}
-      <div className="relative w-full max-w-[1440px] min-h-[92vh] bg-surface-dark-card/90 backdrop-blur-xl rounded-[32px] md:rounded-[40px] border border-white/15 shadow-device p-3 sm:p-5 md:p-6 flex flex-col z-10 overflow-hidden">
+      {/* Main Floating Outer Device Chassis (Adaptive on Mobile, Tablet & Desktop) */}
+      <div className="relative w-full max-w-[1440px] min-h-screen md:min-h-[92vh] bg-surface-dark-card/90 backdrop-blur-xl rounded-2xl sm:rounded-[32px] md:rounded-[40px] border border-white/15 shadow-device p-3 sm:p-5 md:p-6 flex flex-col z-10 overflow-hidden">
         
         {/* Device Header Bar */}
         <HeaderNav
@@ -32,12 +32,12 @@ export const AppContent: React.FC = () => {
         />
 
         {/* Main Body: Navigation Rail + Router Active View */}
-        <div className="flex-1 flex gap-4 md:gap-6 pt-4 md:pt-6 overflow-hidden min-h-0">
-          {/* Vertical Navigation Pill Rail */}
+        <div className="flex-1 flex gap-4 md:gap-6 pt-3 md:pt-6 overflow-hidden min-h-0">
+          {/* Vertical Navigation Pill Rail on Desktop / Floating Bottom Dock on Mobile */}
           <NavigationRail />
 
           {/* Router Outlet / Active View Container */}
-          <main className="flex-1 overflow-y-auto pr-1 md:pr-2 scrollbar-thin">
+          <main className="flex-1 overflow-y-auto pr-1 md:pr-2 pb-20 md:pb-2 scrollbar-thin">
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingView />} />
