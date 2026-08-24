@@ -156,9 +156,9 @@ export const LandingView: React.FC = () => {
               </div>
             </div>
 
-            {/* Floating pill badge on the corner */}
-            <div className="absolute -bottom-4 -left-4 px-4 py-2 bg-surface-panel text-txt-on-light rounded-full font-display font-bold text-xs shadow-xl border border-white/60 flex items-center gap-2">
-              <Flame className="w-4 h-4 text-flag" />
+            {/* Floating pill badge on the corner (Adaptive position for mobile & desktop) */}
+            <div className="absolute -bottom-3 left-3 sm:-bottom-4 sm:left-4 px-3.5 sm:px-4 py-1.5 sm:py-2 bg-surface-panel text-txt-on-light rounded-full font-display font-bold text-xs shadow-xl border border-white/80 flex items-center gap-2 z-20">
+              <Flame className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-flag" />
               <span>Real-Time Practice</span>
             </div>
           </div>
