@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { StarfieldCanvas } from './components/layout/StarfieldCanvas';
@@ -16,6 +16,16 @@ import { RegisterPage } from './pages/RegisterPage';
 
 export const AppContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
+  const mainScrollRef = useRef<HTMLElement>(null);
+
+  // Always reset scroll to top on page / route change
+  useEffect(() => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="relative min-h-screen bg-void text-txt-on-dark font-sans flex flex-col items-center justify-center p-1.5 sm:p-4 md:p-6 lg:p-8 selection:bg-flag selection:text-white">
@@ -37,7 +47,10 @@ export const AppContent: React.FC = () => {
           <NavigationRail />
 
           {/* Router Outlet / Active View Container */}
-          <main className="flex-1 overflow-y-auto pr-1 md:pr-2 pb-20 md:pb-2 scrollbar-thin">
+          <main 
+            ref={mainScrollRef}
+            className="flex-1 overflow-y-auto pr-1 md:pr-2 pb-20 md:pb-2 scrollbar-thin"
+          >
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingView />} />
