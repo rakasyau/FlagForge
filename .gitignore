@@ -12,6 +12,18 @@ dist-ssr/
 .env.*
 !.env.example
 
+# Agent, AI skills & metadata configurations
+.agent/
+.agents/
+.codex/
+.gemini/
+.hermes/
+.impeccable/
+.opencode/
+
+# Project reference materials / raw inputs
+bahan/
+
 # Logs and debug files
 logs/
 *.log
