@@ -533,8 +533,8 @@ export const PracticeView: React.FC = () => {
                 </span>
               </div>
 
-              {/* Active Workspace View */}
-              {activeWorkspaceTab === 'terminal' ? (
+              {/* Active Workspace Views (Persisted across tab switches within the same challenge) */}
+              <div className={activeWorkspaceTab === 'terminal' ? 'block' : 'hidden'}>
                 <InteractiveTerminal
                   key={activeChallenge.id}
                   fsConfig={activeChallenge.terminalFsConfig}
@@ -542,12 +542,16 @@ export const PracticeView: React.FC = () => {
                   subtitle="Isolated virtual filesystem"
                   heightClass="h-[420px]"
                 />
-              ) : (
-                <PythonCodeRunner
-                  key={activeChallenge.id + '_py'}
-                  starterCode={activeChallenge.codeRunnerStarter}
-                  heightClass="h-[380px]"
-                />
+              </div>
+
+              {activeChallenge.hasCodeRunner && (
+                <div className={activeWorkspaceTab === 'coderunner' ? 'block' : 'hidden'}>
+                  <PythonCodeRunner
+                    key={activeChallenge.id + '_py'}
+                    starterCode={activeChallenge.codeRunnerStarter}
+                    heightClass="h-[380px]"
+                  />
+                </div>
               )}
             </div>
           </div>
