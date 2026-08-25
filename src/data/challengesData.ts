@@ -583,7 +583,7 @@ Content-Length: 32`
    Ambil bagian hex dari setiap query: \`666c6167\`, \`7b646e73\`, \`5f337866\`, \`316c7472\`, \`34743130\`, \`6e5f7475\`, \`6e336c5f\`, \`64336330\`, \`6433647d\`
 
 3. **Decode hex ke ASCII**:
-   \`666c61677b646e735f3378663161c7472343130366e5f74756e336c5f64336330643364647d\` → \`flag{dns_3xf1ltr4t10n_tun3l_d3c0d3d}\`
+   \`666c61677b646e735f337866316c7472347431306e5f74756e336c5f643363306433647d\` → \`flag{dns_3xf1ltr4t10n_tun3l_d3c0d3d}\`
 
 4. **Flag**: \`flag{dns_3xf1ltr4t10n_tun3l_d3c0d3d}\``,
     hasTerminal: true,
@@ -816,7 +816,7 @@ def vigenere_decrypt(ciphertext, key):
             result.append(c)
     return ''.join(result)
 
-ciphertext = "hnci{x1i3p3tg_et4em3f_ht3sw3pea_y1p}"
+ciphertext = "hefi{o1l3p3kj_ek4hm3w_kt3jz3pvd_y1g}"
 key = "CTF"
 flag = vigenere_decrypt(ciphertext, key)
 print("Decrypted Flag:", flag)`,
@@ -839,7 +839,7 @@ print("Decrypted Flag:", flag)`,
                   'cipher.txt': {
                     name: 'cipher.txt',
                     type: 'file',
-                    content: 'hnci{x1i3p3tg_et4em3f_ht3sw3pea_y1p}'
+                    content: 'hefi{o1l3p3kj_ek4hm3w_kt3jz3pvd_y1g}'
                   },
                   'known_key.txt': {
                     name: 'known_key.txt',
@@ -1874,15 +1874,15 @@ print("Target Flag: flag{buffer_overflow_rip_hijacked}")`,
 # The binary uses printf(user_input) directly
 
 # Stack leak output (from running binary with "%p.%p.%p.%p.%p.%p.%p.%p"):
-stack_leak = "0x7ffd12340010.0x7f4a8b230000.0x666c61677b6630.0x726d34745f7374.0x7231346e675f6c.0x3334615f737434.0x636b5f73336372.0x33747d"
+stack_leak = "0x7ffd12340010.0x7f4a8b230000.0x666c61677b6630.0x726d34745f7374.0x72316e675f6c33.0x346b5f73743463.0x6b5f7333637233.0x747d"
 
 # Extract hex values that look like ASCII
 parts = stack_leak.split('.')
-flag_hex_parts = [p for p in parts if p.startswith('0x6') or p.startswith('0x7') or p.startswith('0x3')]
+flag_hex_parts = [p.replace('0x', '') for p in parts if p.startswith('0x6') or p.startswith('0x7') or p.startswith('0x3')]
 
 # Decode relevant hex parts
 flag = ""
-for part in ["666c61677b6630", "726d34745f7374", "7231346e675f6c", "3334615f737434", "636b5f73336372", "33747d"]:
+for part in ["666c61677b6630", "726d34745f7374", "72316e675f6c33", "346b5f73743463", "6b5f7333637233", "747d"]:
     flag += bytes.fromhex(part).decode('utf-8')
 
 print(f"Leaked Flag: {flag}")`,
@@ -1902,13 +1902,15 @@ print(f"Leaked Flag: {flag}")`,
                 content: `=== Format String Stack Leak ===
 Input: %p.%p.%p.%p.%p.%p.%p.%p.%p.%p
 
-Output: 0x7ffd12340010.0x7f4a8b230000.0x666c61677b6630.0x726d34745f7374.0x7231346e675f6c.0x3334615f737434.0x636b5f73336372.0x33747d.0x0.0x0
+Output: 0x7ffd12340010.0x7f4a8b230000.0x666c61677b6630.0x726d34745f7374.0x72316e675f6c33.0x346b5f73743463.0x6b5f7333637233.0x747d.0x0.0x0
 
 Decoding hex values at offsets 3-8:
   0x666c61677b6630 -> "flag{f0"
   0x726d34745f7374 -> "rm4t_st"
-  0x7231346e675f6c -> "r14ng_l"
-  0x3334615f737434 -> "34a_st4"  (wait, need to check endianness)
+  0x72316e675f6c33 -> "r1ng_l3"
+  0x346b5f73743463 -> "4k_st4c"
+  0x6b5f7333637233 -> "k_s3cr3"
+  0x747d           -> "t}"
 
 Full reconstructed string: flag{f0rm4t_str1ng_l34k_st4ck_s3cr3t}` }
             }}
