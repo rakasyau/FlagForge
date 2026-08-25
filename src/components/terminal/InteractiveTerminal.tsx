@@ -103,6 +103,11 @@ export const InteractiveTerminal: React.FC<TerminalProps> = ({
   }, [history]);
 
   const focusInput = () => {
+    // Don't steal focus if the user has selected text (they may want to copy it)
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      return;
+    }
     inputRef.current?.focus();
     setIsFocused(true);
   };

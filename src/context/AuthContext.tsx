@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api, getToken, setToken, removeToken, AuthResponse } from '../services/api';
+import { getUser as getLocalUser, getProgress as getLocalProgress } from '../services/storage';
 
 interface AuthContextType {
   user: AuthResponse['user'] | null;
@@ -17,6 +18,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/** Reads localStorage progress into the progressMap format expected by UI. */
+function loadLocalProgress(): Record<string, { challengeId: string; status: 'solved' | 'revealed'; pointsEarned?: number }> {
+  const raw = getLocalProgress();
+  const result: Record<string, { challengeId: string; status: 'solved' | 'revealed'; pointsEarned?: number }> = {};
+  for (const [id, entry] of Object.entries(raw)) {
+    if (entry.status === 'solved' || entry.status === 'revealed') {
+      result[id] = { challengeId: id, status: entry.status };
+    }
+  }
+  return result;
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthResponse['user'] | null>(null);
   const [token, setTokenState] = useState<string | null>(getToken());
@@ -24,22 +37,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [progressMap, setProgressMap] = useState<Record<string, { challengeId: string; status: 'solved' | 'revealed'; pointsEarned?: number }>>({});
 
   const refreshProgress = async () => {
-    if (!getToken()) return;
     try {
-      const data = await api.getProgress();
-      setProgressMap(data.progress || {});
-      if (data.user) {
-        setUser(data.user);
+      if (getToken()) {
+        const data = await api.getProgress();
+        setProgressMap(data.progress || {});
+        if (data.user) {
+          setUser(data.user);
+        }
+        return;
       }
-    } catch (err) {
-      console.error('Failed to sync progress from MongoDB:', err);
+    } catch {
+      // Server unreachable — fall through to localStorage
     }
+    // Fallback: load progress from localStorage
+    setProgressMap(loadLocalProgress());
   };
 
   const refreshUser = async () => {
     const existingToken = getToken();
     if (!existingToken) {
-      setUser(null);
+      // No token — use localStorage user as offline/guest mode
+      const localUser = getLocalUser();
+      setUser(localUser as any);
+      setProgressMap(loadLocalProgress());
       setIsLoading(false);
       return;
     }
@@ -48,11 +68,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { user: fetchedUser } = await api.getMe();
       setUser(fetchedUser);
       await refreshProgress();
-    } catch (err) {
-      console.warn('Session expired or invalid, logging out:', err);
-      removeToken();
-      setTokenState(null);
-      setUser(null);
+    } catch {
+      // Server unreachable — use local user instead of logging out
+      const localUser = getLocalUser();
+      setUser(localUser as any);
+      setProgressMap(loadLocalProgress());
     } finally {
       setIsLoading(false);
     }

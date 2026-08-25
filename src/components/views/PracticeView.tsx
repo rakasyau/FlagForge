@@ -5,6 +5,7 @@ import { CHALLENGES } from '../../data/challengesData';
 import { CATEGORIES } from '../../data/modulesData';
 import { verifyFlag } from '../../services/cryptoUtils';
 import { api } from '../../services/api';
+import { markChallengeSolved, markChallengeRevealed, addSubmissionLog, getUser } from '../../services/storage';
 import { useAuth } from '../../context/AuthContext';
 import { MarkdownRenderer } from '../common/MarkdownRenderer';
 import { InteractiveTerminal } from '../terminal/InteractiveTerminal';
@@ -100,6 +101,15 @@ export const PracticeView: React.FC = () => {
     const isValid = await verifyFlag(flagInput, activeChallenge.flagHash);
 
     if (isValid) {
+      // Log the correct submission
+      addSubmissionLog(
+        activeChallenge.id,
+        activeChallenge.title,
+        activeChallenge.category,
+        flagInput.trim(),
+        true
+      );
+
       try {
         const res = await api.solveChallenge({
           challengeId: activeChallenge.id,
@@ -111,18 +121,27 @@ export const PracticeView: React.FC = () => {
 
         setUser(res.user);
         await refreshProgress();
-
-        setSubmissionFeedback({
-          type: 'success',
-          message: `KERJA BAGUS! Flag valid. Anda mendapatkan +${activeChallenge.points} Poin!`
-        });
-      } catch (err: any) {
-        setSubmissionFeedback({
-          type: 'error',
-          message: err.message || 'Gagal menyimpan ke server.'
-        });
+      } catch {
+        // Server unavailable — save progress locally as fallback
+        markChallengeSolved(activeChallenge.id, activeChallenge.category, activeChallenge.points);
+        const updatedUser = getUser();
+        setUser(updatedUser as any);
+        await refreshProgress();
       }
+
+      setSubmissionFeedback({
+        type: 'success',
+        message: `KERJA BAGUS! Flag valid. Anda mendapatkan +${activeChallenge.points} Poin!`
+      });
     } else {
+      // Log the incorrect submission
+      addSubmissionLog(
+        activeChallenge.id,
+        activeChallenge.title,
+        activeChallenge.category,
+        flagInput.trim(),
+        false
+      );
       setSubmissionFeedback({
         type: 'error',
         message: 'Flag salah! Periksa format `flag{...}` dan coba teliti kembali petunjuk soal.'
@@ -143,14 +162,18 @@ export const PracticeView: React.FC = () => {
 
       setUser(res.user);
       await refreshProgress();
-
-      setSubmissionFeedback({
-        type: 'error',
-        message: 'Soal ditandai sebagai Dilihat Jawabannya (Revealed). Penjelasan langkah demi langkah telah terbuka di bawah.'
-      });
-    } catch (err: any) {
-      console.error('Surrender error:', err);
+    } catch {
+      // Server unavailable — save progress locally as fallback
+      markChallengeRevealed(activeChallenge.id, activeChallenge.category);
+      const updatedUser = getUser();
+      setUser(updatedUser as any);
+      await refreshProgress();
     }
+
+    setSubmissionFeedback({
+      type: 'error',
+      message: 'Soal ditandai sebagai Dilihat Jawabannya (Revealed). Penjelasan langkah demi langkah telah terbuka di bawah.'
+    });
   };
 
   // Helper status badge
