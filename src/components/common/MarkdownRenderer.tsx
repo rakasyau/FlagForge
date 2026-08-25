@@ -56,7 +56,20 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cla
       pre.style.border = '1px solid rgba(255, 255, 255, 0.1)';
       pre.style.margin = '1rem 0';
 
-    // Wrap tables in responsive scroll containers
+      if (codeEl) {
+        codeEl.style.display = 'block';
+        codeEl.style.padding = '0.85rem 1rem';
+        codeEl.style.overflowX = 'auto';
+        codeEl.style.fontSize = '0.75rem';
+        codeEl.style.lineHeight = '1.6';
+        codeEl.style.color = '#E2E8F0';
+        codeEl.style.fontFamily = '"JetBrains Mono", monospace';
+      }
+
+      pre.insertBefore(header, pre.firstChild);
+    });
+
+    // Wrap tables in responsive scroll containers (OUTSIDE the pre loop)
     if (containerRef.current) {
       const tables = containerRef.current.querySelectorAll('table');
       tables.forEach((table) => {
@@ -67,20 +80,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cla
         wrapper.appendChild(table);
       });
     }
-
-    if (codeEl) {
-      codeEl.style.display = 'block';
-      codeEl.style.padding = '0.85rem 1rem';
-      codeEl.style.overflowX = 'auto';
-      codeEl.style.fontSize = '0.75rem';
-      codeEl.style.lineHeight = '1.6';
-      codeEl.style.color = '#E2E8F0';
-      codeEl.style.fontFamily = '"JetBrains Mono", monospace';
-    }
-
-    pre.insertBefore(header, pre.firstChild);
-  });
-}, [parsedHtml]);
+  }, [parsedHtml]);
 
   return (
     <div

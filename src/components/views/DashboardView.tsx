@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CATEGORIES } from '../../data/modulesData';
+import { CATEGORIES, MODULE_CHAPTERS } from '../../data/modulesData';
 import { CHALLENGES } from '../../data/challengesData';
 import { useAuth } from '../../context/AuthContext';
 import { 
@@ -28,7 +28,16 @@ export const DashboardView: React.FC = () => {
   const recommendedChallenges = CHALLENGES.filter(c => {
     const p = progressMap[c.id];
     return !p || p.status !== 'solved';
-  }).slice(0, 3);
+  }).slice(0, 4);
+
+  // Find active recommended chapter dynamically
+  const firstUnsolvedCategory = CATEGORIES.find(cat => {
+    if (['pengantar', 'environment', 'strategi', 'resources'].includes(cat.id)) return false;
+    const catChallenges = CHALLENGES.filter(ch => ch.category === cat.id);
+    return catChallenges.some(ch => progressMap[ch.id]?.status !== 'solved');
+  }) || CATEGORIES[2]; // fallback to Linux
+
+  const activeChapter = MODULE_CHAPTERS.find(m => m.id === firstUnsolvedCategory.id) || MODULE_CHAPTERS[2];
 
   return (
     <div className="space-y-8 pb-10">
@@ -49,7 +58,7 @@ export const DashboardView: React.FC = () => {
                 Selamat Datang, {user.username}!
               </h2>
               <p className="text-[11px] sm:text-xs text-txt-subtle mt-0.5">
-                Lanjutkan latihan untuk menguasai 8 kategori CTF dan meningkatkan ranking.
+                Lanjutkan latihan untuk menguasai 10 kategori CTF dan meningkatkan ranking.
               </p>
             </div>
           </div>
@@ -94,7 +103,7 @@ export const DashboardView: React.FC = () => {
           <div className="w-full h-3 bg-black/10 rounded-full overflow-hidden p-0.5">
             <div
               className="h-full bg-flag rounded-full transition-all duration-500 shadow-orange-glow-sm"
-              style={{ width: `${Math.max(4, overallPercentage)}%` }}
+              style={{ width: `${Math.max(3, overallPercentage)}%` }}
             />
           </div>
         </div>
@@ -111,18 +120,18 @@ export const DashboardView: React.FC = () => {
             </h3>
             <button
               onClick={() => navigate('/latihan')}
-              className="text-xs text-flag hover:underline font-mono font-medium"
+              className="text-xs text-flag hover:underline font-mono font-medium cursor-pointer"
             >
-              Lihat Semua Soal →
+              Lihat Semua Soal ({totalChallenges}) →
             </button>
           </div>
 
-          <div className="space-y-4">
-            {CATEGORIES.filter(c => c.id !== 'pengantar' && c.id !== 'strategi' && c.id !== 'resources').map((cat) => {
+          <div className="space-y-3.5">
+            {CATEGORIES.filter(c => !['pengantar', 'environment', 'strategi', 'resources'].includes(c.id)).map((cat) => {
               const catChallenges = CHALLENGES.filter(ch => ch.category === cat.id);
-              const total = catChallenges.length || 2;
+              const total = catChallenges.length;
               const solvedCount = catChallenges.filter(ch => progressMap[ch.id]?.status === 'solved').length;
-              const percent = Math.min(100, Math.round((solvedCount / total) * 100));
+              const percent = total > 0 ? Math.min(100, Math.round((solvedCount / total) * 100)) : 0;
 
               return (
                 <div 
@@ -157,26 +166,26 @@ export const DashboardView: React.FC = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-base font-display font-bold text-txt-on-dark flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-flag" />
-                <span>Lanjutkan Materi</span>
+                <span>Rekomendasi Materi</span>
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-txt-muted">
-                Bab 3 Aktif
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-flag/15 text-flag">
+                Bab {activeChapter.chapterNumber} Aktif
               </span>
             </div>
 
             <div className="bg-void/60 rounded-2xl p-4 border border-white/5">
-              <span className="text-[10px] font-mono text-flag font-bold block mb-1">TERAKHIR DIBUKA</span>
+              <span className="text-[10px] font-mono text-flag font-bold block mb-1">LANJUTKAN BELAJAR</span>
               <h4 className="font-display font-bold text-sm text-txt-on-dark mb-1">
-                3. Dasar Linux & Command Line
+                {activeChapter.chapterNumber}. {activeChapter.title}
               </h4>
               <p className="text-xs text-txt-muted line-clamp-2 mb-3">
-                Navigasi file, analisis hexdump, grep text processing, dan privilege escalations.
+                {activeChapter.summary}
               </p>
               <button
-                onClick={() => navigate('/modul/linux')}
-                className="w-full py-2 bg-flag hover:bg-flag-hover text-white rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5"
+                onClick={() => navigate(`/modul/${activeChapter.id}`)}
+                className="w-full py-2 bg-flag hover:bg-flag-hover text-white rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>Buka Bab 3 Sekarang</span>
+                <span>Buka Bab {activeChapter.chapterNumber} Sekarang</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

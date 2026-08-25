@@ -1,8 +1,33 @@
 import { UserProfile, UserChallengeProgress, SubmissionLog, Badge, ChallengeCategory } from '../types';
+import { CHALLENGES } from '../data/challengesData';
 
 const USER_KEY = 'flagforge_user';
 const PROGRESS_KEY = 'flagforge_progress';
 const LOGS_KEY = 'flagforge_logs';
+
+export function getCategoryTotals(): Record<ChallengeCategory, number> {
+  const totals: Record<ChallengeCategory, number> = {
+    linux: 0,
+    networking: 0,
+    crypto: 0,
+    web: 0,
+    forensics: 0,
+    stego: 0,
+    reverse: 0,
+    pwn: 0,
+    osint: 0,
+    scripting: 0,
+  };
+
+  for (const c of CHALLENGES) {
+    if (totals[c.category] !== undefined) {
+      totals[c.category] += 1;
+    }
+  }
+  return totals;
+}
+
+const defaultTotals = getCategoryTotals();
 
 export const INITIAL_USER: UserProfile = {
   id: 'usr_cadet_01',
@@ -15,16 +40,16 @@ export const INITIAL_USER: UserProfile = {
   solvedCount: 0,
   revealedCount: 0,
   categoryStats: {
-    linux: { solved: 0, revealed: 0, total: 2 },
-    networking: { solved: 0, revealed: 0, total: 2 },
-    crypto: { solved: 0, revealed: 0, total: 2 },
-    web: { solved: 0, revealed: 0, total: 2 },
-    forensics: { solved: 0, revealed: 0, total: 2 },
-    stego: { solved: 0, revealed: 0, total: 2 },
-    reverse: { solved: 0, revealed: 0, total: 2 },
-    pwn: { solved: 0, revealed: 0, total: 2 },
-    osint: { solved: 0, revealed: 0, total: 1 },
-    scripting: { solved: 0, revealed: 0, total: 1 },
+    linux: { solved: 0, revealed: 0, total: defaultTotals.linux },
+    networking: { solved: 0, revealed: 0, total: defaultTotals.networking },
+    crypto: { solved: 0, revealed: 0, total: defaultTotals.crypto },
+    web: { solved: 0, revealed: 0, total: defaultTotals.web },
+    forensics: { solved: 0, revealed: 0, total: defaultTotals.forensics },
+    stego: { solved: 0, revealed: 0, total: defaultTotals.stego },
+    reverse: { solved: 0, revealed: 0, total: defaultTotals.reverse },
+    pwn: { solved: 0, revealed: 0, total: defaultTotals.pwn },
+    osint: { solved: 0, revealed: 0, total: defaultTotals.osint },
+    scripting: { solved: 0, revealed: 0, total: defaultTotals.scripting },
   }
 };
 
@@ -41,29 +66,29 @@ export const INITIAL_BADGES: Badge[] = [
   {
     id: 'terminal_ninja',
     name: 'Terminal Ninja',
-    description: 'Menyelesaikan seluruh soal tantangan Linux & Networking.',
+    description: 'Menyelesaikan 3+ soal tantangan Linux & Networking.',
     icon: 'Terminal',
     unlocked: false,
     progress: 0,
-    requirementText: 'Solve all Linux & Network challenges'
+    requirementText: 'Solve 3+ Linux & Network challenges'
   },
   {
     id: 'crypto_cracked',
     name: 'Cipher Breaker',
-    description: 'Menembus kriptografi Base64, Caesar, dan RSA.',
+    description: 'Menembus 3+ tantangan Kriptografi (Base64, Caesar, XOR, RSA).',
     icon: 'Key',
     unlocked: false,
     progress: 0,
-    requirementText: 'Solve 2 Crypto challenges'
+    requirementText: 'Solve 3 Crypto challenges'
   },
   {
     id: 'web_injector',
     name: 'Web Exploiter',
-    description: 'Menemukan celah SQL Injection & LFI pada target web.',
+    description: 'Menemukan celah SQLi, XSS, LFI, atau JWT pada target web.',
     icon: 'Globe',
     unlocked: false,
     progress: 0,
-    requirementText: 'Solve 2 Web challenges'
+    requirementText: 'Solve 3 Web challenges'
   },
   {
     id: 'persistent_hacker',
@@ -80,7 +105,17 @@ export function getUser(): UserProfile {
   const saved = localStorage.getItem(USER_KEY);
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const user = JSON.parse(saved);
+      // Ensure category total stats stay synced with current challenge list
+      const totals = getCategoryTotals();
+      for (const cat of Object.keys(totals) as ChallengeCategory[]) {
+        if (!user.categoryStats[cat]) {
+          user.categoryStats[cat] = { solved: 0, revealed: 0, total: totals[cat] };
+        } else {
+          user.categoryStats[cat].total = totals[cat];
+        }
+      }
+      return user;
     } catch {
       // fallback
     }
@@ -141,7 +176,8 @@ export function markChallengeSolved(challengeId: string, category: ChallengeCate
     }
     
     // Update title based on points
-    if (user.points >= 800) user.title = 'Elite CTF Master';
+    if (user.points >= 1500) user.title = 'Grandmaster CTF Elite';
+    else if (user.points >= 800) user.title = 'Elite CTF Master';
     else if (user.points >= 400) user.title = 'Cyber Vanguard';
     else if (user.points >= 150) user.title = 'Apprentice Hacker';
 
@@ -212,18 +248,20 @@ export function getBadges(user: UserProfile): Badge[] {
     } else if (badge.id === 'terminal_ninja') {
       const linuxSolved = user.categoryStats.linux?.solved || 0;
       const netSolved = user.categoryStats.networking?.solved || 0;
-      const total = 4;
+      const totalRequired = 3;
       const done = linuxSolved + netSolved;
-      progress = Math.min(100, Math.round((done / total) * 100));
-      unlocked = done >= total;
+      progress = Math.min(100, Math.round((done / totalRequired) * 100));
+      unlocked = done >= totalRequired;
     } else if (badge.id === 'crypto_cracked') {
       const cryptoSolved = user.categoryStats.crypto?.solved || 0;
-      progress = Math.min(100, Math.round((cryptoSolved / 2) * 100));
-      unlocked = cryptoSolved >= 2;
+      const target = 3;
+      progress = Math.min(100, Math.round((cryptoSolved / target) * 100));
+      unlocked = cryptoSolved >= target;
     } else if (badge.id === 'web_injector') {
       const webSolved = user.categoryStats.web?.solved || 0;
-      progress = Math.min(100, Math.round((webSolved / 2) * 100));
-      unlocked = webSolved >= 2;
+      const target = 3;
+      progress = Math.min(100, Math.round((webSolved / target) * 100));
+      unlocked = webSolved >= target;
     } else if (badge.id === 'persistent_hacker') {
       progress = Math.min(100, Math.round((user.points / 500) * 100));
       unlocked = user.points >= 500;
